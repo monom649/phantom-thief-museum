@@ -27,12 +27,12 @@ export const アセット = {
   ボタン右: 'https://i.imgur.com/XYCX8Xz.png',
 
   // 音声
-  スタート効果音: '/audio/start.wav',
-  移動音右: '/audio/move_right.wav',
-  移動音左: '/audio/move_left.wav',
-  盗む音: '/audio/steal.wav',
-  ゲームオーバー音: '/audio/gameover.wav',
-  クリア音: '/audio/clear.wav',
+  スタート効果音: '/start.wav',
+  移動音右: '/move_right.wav',
+  移動音左: '/move_left.wav',
+  盗む音: '/steal.wav',
+  ゲームオーバー音: '/gameover.wav',
+  クリア音: '/clear.wav',
 };
 
 export const すべてのおもちゃ: おもちゃ[] = [
