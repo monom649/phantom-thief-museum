@@ -1,4 +1,3 @@
-
 import { おもちゃ } from './types';
 
 // ゲーム設定
