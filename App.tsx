@@ -359,7 +359,7 @@ export default function App() {
       <GameModal gameState={ゲーム状態} onStart={ゲーム開始処理} onRetry={handleRetry} reason={ゲームオーバー理由} />
       { ゲーム状態 === 'playing' && (
       <>
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
           <div className="grid grid-cols-6 gap-2 w-full bg-black/20 p-2 rounded-lg">
             {すべてのおもちゃ.map((toy) => (
               <div key={toy.id} className="aspect-square bg-black rounded flex justify-center items-center">
@@ -408,12 +408,12 @@ export default function App() {
             ))}
           </div>
           <div 
-              className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-1/4 max-w-[180px] z-20"
+              className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-1/3 max-w-[234px] z-20"
               style={{ aspectRatio: '411 / 510' }}
           >
               <img src={サンサン画像} alt="サンサン" className="w-full h-full object-contain drop-shadow-2xl" />
           </div>
-          <div className={`absolute bottom-[33%] w-1/2 max-w-[280px] transition-all duration-300 ease-in-out ${ノイズ位置クラス} z-10`}>
+          <div className={`absolute bottom-[33%] w-2/3 max-w-[364px] transition-all duration-300 ease-in-out ${ノイズ位置クラス} z-10`}>
             <img src={ノイズ画像URL} alt="怪盗ノイズ" className="w-full drop-shadow-2xl" />
           </div>
         </div>
