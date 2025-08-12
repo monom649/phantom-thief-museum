@@ -359,7 +359,7 @@ export default function App() {
       <GameModal gameState={ゲーム状態} onStart={ゲーム開始処理} onRetry={handleRetry} reason={ゲームオーバー理由} />
       { ゲーム状態 === 'playing' && (
       <>
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
           <div className="grid grid-cols-6 gap-2 w-full bg-black/20 p-2 rounded-lg">
             {すべてのおもちゃ.map((toy) => (
               <div key={toy.id} className="aspect-square bg-black rounded flex justify-center items-center">
