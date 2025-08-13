@@ -74,8 +74,8 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
   const title = gameState === 'won' ? `${clearTimeFormatted}でクリア！` : 'ゲームオーバー';
   const message = gameState === 'won' ? '' : reason;
   
-  const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！`;
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=怪盗ミュージアム`;
+  const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！ #怪盗ミュージアム`;
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
   return (
     <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
@@ -92,7 +92,7 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
           href={tweetUrl} 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="mt-4 text-sm text-gray-400 hover:text-white"
+          className="mt-4 text-sm text-blue-400 hover:text-blue-300 underline"
         >
           Xにスクショしてポストしてね！
         </a>
