@@ -81,6 +81,7 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
 
   if (gameState === 'won') {
     console.log("GameModal rendered with state: won");
+    console.log("Assets available in 'won' state:", アセット); // デバッグ用ログ
     const clearTimeFormatted = formatClearTime(finalElapsedTimeMs);
     const title = `${clearTimeFormatted}でクリア！`;
     const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！ #怪盗ミュージアム`;
@@ -94,13 +95,14 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
           href={tweetUrl} 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="mt-8"
+          className="mt-8 flex flex-col items-center gap-2 text-white no-underline"
         >
           <img 
             src={アセット.Xロゴ} 
-            alt="Xでシェアする" 
+            alt="Xロゴ" 
             className="w-16 h-16 transition-transform transform hover:scale-110"
           />
+          <span className="font-semibold text-lg">Xでシェア</span>
         </a>
       </div>
     );
@@ -303,7 +305,7 @@ export default function App() {
   
   // クリア・敗北条件
   useEffect(() => {
-    if (盗んだおもちゃ.length === おもちゃの総数 && gameState === 'playing') {
+    if (gameState === 'playing' && 盗んだおもちゃ.length === おもちゃの総数) {
       if (gameStartTimeRef.current) {
         const endTime = performance.now();
         setFinalElapsedTimeMs(endTime - gameStartTimeRef.current);
@@ -341,7 +343,7 @@ export default function App() {
     }, 200);
 
     return () => clearTimeout(timerId);
-  }, [盗みモーション中]);
+  }, [盗みモーション中, 左のおもちゃ, 右のおもちゃ]);
 
   // --- イベントハンドラ ---
   const ゲーム開始処理 = () => {
@@ -375,7 +377,7 @@ export default function App() {
   // --- レンダーロジック ---
   let ノイズ画像URL = アセット.ノイズ待機;
   if (盗みモーション中) {
-    ノイズ画像URL = ノイズの位置 === 'left' ? アセット.ノイズ盗む右 : アセット.ノイズ盗む左;
+    ノイズ画像URL = ノイズの位置 === 'right' ? アセット.ノイズ盗む右 : アセット.ノイズ盗む左;
   }
 
   const ノイズ位置クラス = {
