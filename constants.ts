@@ -1,7 +1,7 @@
 import { おもちゃ } from './types';
 
 // ゲーム設定
-export const 制限時間 = 120; // 2分（秒）
+export const 制限時間 = 60; // 1分（秒）
 export const おもちゃの総数 = 6;
 export const サンサン振り向き間隔_最小 = 100; // 0.1秒
 export const サンサン振り向き間隔_最大 = 500; // 0.5秒

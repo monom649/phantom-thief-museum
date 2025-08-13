@@ -180,6 +180,8 @@ export default function App() {
   const [盗んだおもちゃ, set盗んだおもちゃ] = useState<number[]>([]);
   const [残り時間, set残り時間] = useState(制限時間);
   const [ゲームオーバー理由, setゲームオーバー理由] = useState('');
+  const [isShaking, setIsShaking] = useState(false);
+  const [showCaughtIndicator, setShowCaughtIndicator] = useState(false);
 
   const 左のおもちゃ = すべてのおもちゃ.filter(t => t.配置 === 'left');
   const 右のおもちゃ = すべてのおもちゃ.filter(t => t.配置 === 'right');
@@ -220,7 +222,7 @@ export default function App() {
   // サンサンのAI
   useEffect(() => {
     if (gameState !== 'playing') {
-      setサンサンの向き('front');
+      if (gameState !== 'lost') setサンサンの向き('front');
       return;
     }
   
@@ -271,6 +273,10 @@ export default function App() {
       const isCaught = currentNoisePosition === currentSansanDirection;
 
       if (isCaught) {
+        setIsShaking(true);
+        setShowCaughtIndicator(true);
+        setTimeout(() => setIsShaking(false), 500);
+
         setGameState('lost');
         setゲームオーバー理由('サンサンに見つかりました！');
       } else {
@@ -298,6 +304,8 @@ export default function App() {
     set盗んだおもちゃ([]);
     set残り時間(制限時間);
     setゲームオーバー理由('');
+    setIsShaking(false);
+    setShowCaughtIndicator(false);
   };
 
   const 移動処理 = (direction: 'left' | 'right') => {
@@ -327,10 +335,11 @@ export default function App() {
 
   const サンサン画像 = { front: アセット.サンサン正面, left: アセット.サンサン左, right: アセット.サンサン右 }[サンサンの向き];
   const 背景画像URL = gameState === 'start' || gameState === 'loading' || gameState === 'loading_error' ? アセット.スタート画面 : アセット.背景;
+  const showGameScene = gameState === 'playing' || gameState === 'lost';
 
   return (
     <div 
-      className="relative h-full bg-cover bg-no-repeat bg-center overflow-hidden font-sans select-none"
+      className={`relative h-full bg-cover bg-no-repeat bg-center overflow-hidden font-sans select-none ${isShaking ? 'screen-shake' : ''}`}
       style={{
         maxWidth: '100vw',
         aspectRatio: '9 / 16',
@@ -339,7 +348,7 @@ export default function App() {
     >
       {gameState === 'loading' && <LoadingScreen progress={progress} />}
       <GameModal gameState={gameState} onStart={ゲーム開始処理} onRetry={retry} reason={ゲームオーバー理由} />
-      { gameState === 'playing' && (
+      { showGameScene && (
       <>
         <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
           <div className="grid grid-cols-6 gap-2 w-full bg-black/20 p-2 rounded-lg">
@@ -355,22 +364,22 @@ export default function App() {
               style={{ width: `${(残り時間 / 制限時間) * 100}%` }}
             />
             <span className="absolute inset-0 w-full h-full flex items-center justify-center text-sm font-bold text-black">
-              {残り時間} 秒
+              {gameState === 'playing' ? `${残り時間} 秒` : ''}
             </span>
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xs flex justify-around items-center z-30">
-          <button onClick={() => 移動処理('left')} className="w-20 h-20 active:scale-90 transition-transform">
+          <button onClick={() => 移動処理('left')} className="w-20 h-20 active:scale-90 transition-transform disabled:opacity-50" disabled={gameState !== 'playing'}>
             <img src={アセット.ボタン左} alt="左に移動" className="w-full h-full" />
           </button>
           <button 
             onClick={盗むアクション処理}
             className="w-20 h-20 active:scale-90 transition-transform disabled:opacity-50"
-            disabled={ノイズの位置 === 'center' || 盗みモーション中}
+            disabled={ノイズの位置 === 'center' || 盗みモーション中 || gameState !== 'playing'}
           >
             <img src={アセット.ボタン盗む} alt="盗む" className="w-full h-full" />
           </button>
-          <button onClick={() => 移動処理('right')} className="w-20 h-20 active:scale-90 transition-transform">
+          <button onClick={() => 移動処理('right')} className="w-20 h-20 active:scale-90 transition-transform disabled:opacity-50" disabled={gameState !== 'playing'}>
             <img src={アセット.ボタン右} alt="右に移動" className="w-full h-full" />
           </button>
         </div>
@@ -393,6 +402,11 @@ export default function App() {
               className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-1/3 max-w-[234px] z-20"
               style={{ aspectRatio: '411 / 510' }}
           >
+              {showCaughtIndicator && (
+                  <div className="absolute -top-1/4 left-1/2 -translate-x-1/2 text-red-600 text-8xl font-black drop-shadow-lg pop-in z-30">
+                      !
+                  </div>
+              )}
               <img src={サンサン画像} alt="サンサン" className="w-full h-full object-contain drop-shadow-2xl" />
           </div>
           <div className={`absolute bottom-[33%] w-2/3 max-w-[364px] transition-all duration-300 ease-in-out ${ノイズ位置クラス} z-10`}>
