@@ -1,6 +1,16 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ゲーム状態, ノイズの位置, サンサンの向き, おもちゃ } from './types';
 import { 制限時間, おもちゃの総数, サンサン振り向き間隔_最小, サンサン振り向き間隔_最大, アセット, すべてのおもちゃ } from './constants';
+
+// --- Helper Functions ---
+const formatClearTime = (ms: number): string => {
+  if (ms <= 0) return "0'00";
+  const seconds = Math.floor(ms / 1000);
+  const hundredths = Math.floor((ms % 1000) / 10).toString().padStart(2, '0');
+  return `${seconds}'${hundredths}`;
+};
+
 
 // --- UI Helper Components ---
 
@@ -23,9 +33,10 @@ interface GameModalProps {
   onStart: () => void;
   onRetry: () => void;
   reason: string;
+  finalElapsedTimeMs: number;
 }
 
-const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reason }) => {
+const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reason, finalElapsedTimeMs }) => {
   if (gameState === 'playing' || gameState === 'loading') return null;
   
   // ロードエラー画面
@@ -60,7 +71,12 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
 
   // ゲームオーバー/勝利画面のUI
   const title = gameState === 'won' ? 'ミッションコンプリート！' : 'ゲームオーバー';
-  const message = gameState === 'won' ? 'すべてのお宝を盗み出すことに成功した！' : reason;
+  
+  const clearTimeFormatted = formatClearTime(finalElapsedTimeMs);
+  const message = gameState === 'won' ? `${clearTimeFormatted}でクリア！` : reason;
+  
+  const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！`;
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=怪盗ミュージアム`;
 
   return (
     <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
@@ -72,6 +88,16 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
       >
         もう一度プレイ
       </button>
+      {gameState === 'won' && (
+        <a 
+          href={tweetUrl} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="mt-4 text-sm text-gray-400 hover:text-white"
+        >
+          Xにスクショしてポストしてね！
+        </a>
+      )}
     </div>
   );
 };
@@ -179,6 +205,7 @@ export default function App() {
   const [サンサンの向き, setサンサンの向き] = useState<サンサンの向き>('front');
   const [盗んだおもちゃ, set盗んだおもちゃ] = useState<number[]>([]);
   const [残り時間, set残り時間] = useState(制限時間);
+  const [finalElapsedTimeMs, setFinalElapsedTimeMs] = useState(0);
   const [ゲームオーバー理由, setゲームオーバー理由] = useState('');
   const [isShaking, setIsShaking] = useState(false);
   const [showCaughtIndicator, setShowCaughtIndicator] = useState(false);
@@ -193,6 +220,7 @@ export default function App() {
   const 盗んだおもちゃRef = useRef(盗んだおもちゃ);
   盗んだおもちゃRef.current = 盗んだおもちゃ;
   const サンサンタイマーRef = useRef<{ turn?: number; turnBack?: number }>({});
+  const gameStartTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (isLoading) {
@@ -205,7 +233,7 @@ export default function App() {
     }
   }, [isLoading, error]);
   
-  // ゲームタイマー
+  // ゲームタイマー (カウントダウン)
   useEffect(() => {
     if (gameState !== 'playing') return;
     if (残り時間 <= 0) {
@@ -259,6 +287,10 @@ export default function App() {
   // クリア・敗北条件
   useEffect(() => {
     if (盗んだおもちゃ.length === おもちゃの総数 && gameState === 'playing') {
+      if (gameStartTimeRef.current) {
+        const endTime = performance.now();
+        setFinalElapsedTimeMs(endTime - gameStartTimeRef.current);
+      }
       setGameState('won');
     }
   }, [盗んだおもちゃ, gameState]);
@@ -297,12 +329,14 @@ export default function App() {
   // --- イベントハンドラ ---
   const ゲーム開始処理 = () => {
     loadedAudio['スタート効果音']?.play();
+    gameStartTimeRef.current = performance.now();
     setGameState('playing');
     setノイズの位置('center');
     set盗みモーション中(false);
     setサンサンの向き('front');
     set盗んだおもちゃ([]);
     set残り時間(制限時間);
+    setFinalElapsedTimeMs(0);
     setゲームオーバー理由('');
     setIsShaking(false);
     setShowCaughtIndicator(false);
@@ -347,7 +381,7 @@ export default function App() {
       }}
     >
       {gameState === 'loading' && <LoadingScreen progress={progress} />}
-      <GameModal gameState={gameState} onStart={ゲーム開始処理} onRetry={retry} reason={ゲームオーバー理由} />
+      <GameModal gameState={gameState} onStart={ゲーム開始処理} onRetry={retry} reason={ゲームオーバー理由} finalElapsedTimeMs={finalElapsedTimeMs} />
       { showGameScene && (
       <>
         <div className="absolute top-24 left-1/2 -translate-x-1/2 w-full max-w-sm px-4 z-30 flex flex-col items-center gap-2">
