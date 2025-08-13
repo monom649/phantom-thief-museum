@@ -47,71 +47,76 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
     </button>
   );
 
-  switch (gameState) {
-    case 'loading':
-    case 'playing':
-      return null;
-
-    case 'loading_error':
-      return (
-        <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center z-50 text-white text-center p-8">
-          <h1 className="text-4xl font-bold mb-4 text-red-500">読み込みエラー</h1>
-          <p className="text-lg mb-8">{reason}</p>
-          <button
-            onClick={onRetry}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-2xl font-semibold transition-transform transform hover:scale-105"
-          >
-            リトライ
-          </button>
-        </div>
-      );
-    
-    case 'start':
-      return (
-        <div className="absolute inset-0 flex justify-center items-end z-50 pb-[15vh]">
-          <button
-            onClick={onStart}
-            className="px-8 py-4 bg-red-600 hover:bg-red-700 rounded-lg text-2xl font-semibold transition-transform transform hover:scale-105 shadow-lg"
-          >
-            ゲーム開始
-          </button>
-        </div>
-      );
-
-    case 'won': {
-      const clearTimeFormatted = formatClearTime(finalElapsedTimeMs);
-      const title = `${clearTimeFormatted}でクリア！`;
-      const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！ #怪盗ミュージアム`;
-      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-      
-      return (
-        <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
-          <h1 className="text-5xl font-bold mb-8">{title}</h1>
-          <PlayAgainButton />
-          <a 
-            href={tweetUrl} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="mt-6 text-lg text-white hover:text-gray-300 underline font-bold"
-          >
-            Xにスクショしてポストしてね！
-          </a>
-        </div>
-      );
-    }
-
-    case 'lost':
-      return (
-        <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
-          <h1 className="text-5xl font-bold mb-4">ゲームオーバー</h1>
-          <p className="text-xl mb-8">{reason}</p>
-          <PlayAgainButton />
-        </div>
-      );
-
-    default:
-      return null;
+  if (gameState === 'loading' || gameState === 'playing') {
+    return null;
   }
+
+  if (gameState === 'loading_error') {
+    return (
+      <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center z-50 text-white text-center p-8">
+        <h1 className="text-4xl font-bold mb-4 text-red-500">読み込みエラー</h1>
+        <p className="text-lg mb-8">{reason}</p>
+        <button
+          onClick={onRetry}
+          className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-2xl font-semibold transition-transform transform hover:scale-105"
+        >
+          リトライ
+        </button>
+      </div>
+    );
+  }
+  
+  if (gameState === 'start') {
+    return (
+      <div className="absolute inset-0 flex justify-center items-end z-50 pb-[15vh]">
+        <button
+          onClick={onStart}
+          className="px-8 py-4 bg-red-600 hover:bg-red-700 rounded-lg text-2xl font-semibold transition-transform transform hover:scale-105 shadow-lg"
+        >
+          ゲーム開始
+        </button>
+      </div>
+    );
+  }
+
+  if (gameState === 'won') {
+    console.log("GameModal rendered with state: won");
+    const clearTimeFormatted = formatClearTime(finalElapsedTimeMs);
+    const title = `${clearTimeFormatted}でクリア！`;
+    const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！ #怪盗ミュージアム`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    
+    return (
+      <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50 text-white text-center p-8">
+        <h1 className="text-5xl font-bold mb-8">{title}</h1>
+        <PlayAgainButton />
+        <a 
+          href={tweetUrl} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="mt-8"
+        >
+          <img 
+            src={アセット.Xロゴ} 
+            alt="Xでシェアする" 
+            className="w-16 h-16 transition-transform transform hover:scale-110"
+          />
+        </a>
+      </div>
+    );
+  }
+
+  if (gameState === 'lost') {
+    return (
+      <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
+        <h1 className="text-5xl font-bold mb-4">ゲームオーバー</h1>
+        <p className="text-xl mb-8">{reason}</p>
+        <PlayAgainButton />
+      </div>
+    );
+  }
+
+  return null;
 };
 
 // --- Custom Hook for Asset Loading ---

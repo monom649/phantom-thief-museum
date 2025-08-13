@@ -25,6 +25,9 @@ export const アセット = {
   ボタン盗む: 'https://i.imgur.com/Wriattw.png',
   ボタン右: 'https://i.imgur.com/XYCX8Xz.png',
 
+  // SNS
+  Xロゴ: 'https://i.imgur.com/8usF8Ge.png',
+
   // 音声
   スタート効果音: '/start.wav',
   移動音右: '/move_right.wav',
