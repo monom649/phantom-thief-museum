@@ -70,10 +70,9 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
   }
 
   // ゲームオーバー/勝利画面のUI
-  const title = gameState === 'won' ? 'ミッションコンプリート！' : 'ゲームオーバー';
-  
   const clearTimeFormatted = formatClearTime(finalElapsedTimeMs);
-  const message = gameState === 'won' ? `${clearTimeFormatted}でクリア！` : reason;
+  const title = gameState === 'won' ? `${clearTimeFormatted}でクリア！` : 'ゲームオーバー';
+  const message = gameState === 'won' ? '' : reason;
   
   const tweetText = `怪盗ミュージアムを${clearTimeFormatted}でクリア！`;
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&hashtags=怪盗ミュージアム`;
@@ -81,7 +80,7 @@ const GameModal: React.FC<GameModalProps> = ({ gameState, onStart, onRetry, reas
   return (
     <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50 text-white text-center p-8">
       <h1 className="text-5xl font-bold mb-4">{title}</h1>
-      <p className="text-xl mb-8">{message}</p>
+      {message && <p className="text-xl mb-8">{message}</p>}
       <button
         onClick={onStart}
         className="px-8 py-4 bg-red-600 hover:bg-red-700 rounded-lg text-2xl font-semibold transition-transform transform hover:scale-105"
